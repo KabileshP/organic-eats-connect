@@ -1,4 +1,3 @@
-
 // Mock data for products
 const mockProducts = [
   {
@@ -126,6 +125,70 @@ const mockFarmers = [
     phone: "(555) 345-6789"
   }
 ];
+
+// Mock partner applications data
+let mockPartnerApplications = [
+  {
+    id: 1,
+    name: "David Wilson",
+    email: "david@organicvalley.com",
+    phone: "(555) 987-6543",
+    farmName: "Organic Valley Farm",
+    farmLocation: "Monterey County, CA",
+    farmSize: "150 acres",
+    experience: "12 years",
+    description: "Specializing in organic vegetables and herbs. Currently growing tomatoes, peppers, lettuce, and various herbs using sustainable farming practices.",
+    status: "pending",
+    appliedAt: "2024-01-15T10:30:00Z"
+  },
+  {
+    id: 2,
+    name: "Maria Garcia",
+    email: "maria@freshfields.com",
+    phone: "(555) 456-7890",
+    farmName: "Fresh Fields Organic",
+    farmLocation: "San Luis Obispo, CA",
+    farmSize: "75 acres",
+    experience: "8 years",
+    description: "Family-owned farm focusing on seasonal produce. We grow strawberries, broccoli, cauliflower, and root vegetables using biodynamic methods.",
+    status: "approved",
+    appliedAt: "2024-01-10T14:20:00Z"
+  },
+  {
+    id: 3,
+    name: "James Thompson",
+    email: "james@greenacres.com",
+    phone: "(555) 234-5678",
+    farmName: "Green Acres Farm",
+    farmLocation: "Fresno County, CA",
+    farmSize: "200 acres",
+    experience: "15 years",
+    description: "Large-scale organic operation specializing in leafy greens and citrus fruits. USDA certified organic since 2015.",
+    status: "rejected",
+    appliedAt: "2024-01-05T09:15:00Z"
+  },
+  {
+    id: 4,
+    name: "Lisa Chen",
+    email: "lisa@sunshinefarm.com",
+    phone: "(555) 345-6789",
+    farmName: "Sunshine Organic Farm",
+    farmLocation: "Ventura County, CA",
+    farmSize: "90 acres",
+    experience: "10 years",
+    description: "Sustainable farming with focus on berries and stone fruits. We practice regenerative agriculture and have been certified organic for 5 years.",
+    status: "pending",
+    appliedAt: "2024-01-20T16:45:00Z"
+  }
+];
+
+// Mock admin user
+let mockAdmin = {
+  id: 1,
+  email: "admin@farmfresh.com",
+  isAdmin: true,
+  isAuthenticated: false
+};
 
 // Mock user data
 let mockUser = {
@@ -260,5 +323,59 @@ export const mockApi = {
     await delay(800);
     console.log("Contact message sent:", messageData);
     return { success: true, message: "Message sent successfully!" };
+  },
+
+  // Admin authentication
+  async adminLogin(email: string, password: string) {
+    await delay(800);
+    if (email === "admin@farmfresh.com" && password === "admin123") {
+      mockAdmin.isAuthenticated = true;
+      return { success: true, admin: mockAdmin };
+    }
+    return { success: false, error: "Invalid admin credentials" };
+  },
+
+  async adminLogout() {
+    await delay(300);
+    mockAdmin.isAuthenticated = false;
+    return { success: true };
+  },
+
+  // Partner applications management
+  async getPartnerApplications() {
+    await delay(600);
+    return mockPartnerApplications.sort((a, b) => new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime());
+  },
+
+  async approvePartnerApplication(applicationId: number) {
+    await delay(500);
+    const application = mockPartnerApplications.find(app => app.id === applicationId);
+    if (application) {
+      application.status = "approved";
+      return { success: true, application };
+    }
+    return { success: false, error: "Application not found" };
+  },
+
+  async rejectPartnerApplication(applicationId: number) {
+    await delay(500);
+    const application = mockPartnerApplications.find(app => app.id === applicationId);
+    if (application) {
+      application.status = "rejected";
+      return { success: true, application };
+    }
+    return { success: false, error: "Application not found" };
+  },
+
+  async submitPartnerApplication(applicationData: any) {
+    await delay(1000);
+    const newApplication = {
+      id: Date.now(),
+      ...applicationData,
+      status: "pending",
+      appliedAt: new Date().toISOString()
+    };
+    mockPartnerApplications.push(newApplication);
+    return { success: true, application: newApplication };
   }
 };
