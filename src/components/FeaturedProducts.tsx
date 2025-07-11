@@ -1,54 +1,69 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Plus } from 'lucide-react';
+import { Star, Plus, ShoppingCart } from 'lucide-react';
+import { mockApi } from '@/services/mockApi';
+import { useCart } from '@/contexts/CartContext';
 
-const products = [
-  {
-    id: 1,
-    name: "Heritage Tomatoes",
-    farmer: "Green Valley Farm",
-    price: "$8.99",
-    rating: 4.9,
-    image: "🍅",
-    description: "Vine-ripened heirloom tomatoes bursting with flavor",
-    badge: "Bestseller"
-  },
-  {
-    id: 2,
-    name: "Fresh Spinach Bundle",
-    farmer: "Sunny Acres",
-    price: "$5.49",
-    rating: 4.8,
-    image: "🥬",
-    description: "Crisp organic spinach, perfect for salads",
-    badge: "New"
-  },
-  {
-    id: 3,
-    name: "Rainbow Carrots",
-    farmer: "Earth & Sky Farm",
-    price: "$6.99",
-    rating: 4.9,
-    image: "🥕",
-    description: "Colorful organic carrots with incredible sweetness",
-    badge: "Seasonal"
-  },
-  {
-    id: 4,
-    name: "Artisan Lettuce Mix",
-    farmer: "Harvest Moon",
-    price: "$7.49",
-    rating: 4.7,
-    image: "🥗",
-    description: "Premium mixed greens for gourmet salads",
-    badge: "Premium"
-  }
-];
+interface Product {
+  id: number;
+  name: string;
+  farmer: string;
+  price: number;
+  rating: number;
+  image: string;
+  description: string;
+  badge: string;
+}
 
 export const FeaturedProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { addToCart, state: cartState } = useCart();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const featuredProducts = await mockApi.getFeaturedProducts();
+        setProducts(featuredProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = async (productId: number) => {
+    await addToCart(productId, 1);
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Fresh Harvest Daily
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Loading fresh products...
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-96"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -75,6 +90,8 @@ export const FeaturedProducts = () => {
                   <Button 
                     size="sm" 
                     className="absolute top-3 right-3 bg-white hover:bg-green-50 text-green-600 shadow-md"
+                    onClick={() => handleAddToCart(product.id)}
+                    disabled={cartState.isLoading}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -93,8 +110,13 @@ export const FeaturedProducts = () => {
                   <p className="text-gray-600 text-sm mb-4">{product.description}</p>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-gray-900">{product.price}</span>
-                    <Button className="bg-green-600 hover:bg-green-700">
+                    <span className="text-2xl font-bold text-gray-900">${product.price}</span>
+                    <Button 
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={() => handleAddToCart(product.id)}
+                      disabled={cartState.isLoading}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
                       Add to Cart
                     </Button>
                   </div>
