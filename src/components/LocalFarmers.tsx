@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Award, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const farmers = [
   {
@@ -92,24 +92,28 @@ export const LocalFarmers = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  <Users className="w-4 h-4 mr-2" />
-                  Visit Farm Store
-                </Button>
+                <Link to={`/farm-store/${farmer.id}`}>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    <Users className="w-4 h-4 mr-2" />
+                    Visit Farm Store
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
         </div>
         
         <div className="text-center mt-12">
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-          >
-            <Award className="w-5 h-5 mr-2" />
-            Become a Partner Farmer
-          </Button>
+          <Link to="/partner-farmer">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+            >
+              <Award className="w-5 h-5 mr-2" />
+              Become a Partner Farmer
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
